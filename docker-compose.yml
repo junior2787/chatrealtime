@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./packages/server
+      dockerfile: Dockerfile
+    container_name: chatrealtime-server
+    environment:
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production-min-32-chars
+      PORT: 3003
+      NODE_ENV: development
+      CLIENT_URL: http://localhost:5173
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./packages/server:/app
+      - /app/node_modules
+
+  client:
+    build:
+      context: ./packages/client
+      dockerfile: Dockerfile
+    container_name: chatrealtime-client
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_SERVER_URL: http://localhost:3003
+    depends_on:
+      - server
+    volumes:
+      - ./packages/client:/app
+      - /app/node_modules
